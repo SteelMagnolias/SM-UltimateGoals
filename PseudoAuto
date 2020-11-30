@@ -1,0 +1,78 @@
+package org.firstinspires.ftc.teamcode;
+
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
+
+import java.security.ProtectionDomain;
+
+@Autonomous (name = "PseudoAuto", group = "Iterative OpMode")
+public class PseudoAuto extends LinearOpMode {
+
+    private DcMotor leftFront;
+    private DcMotor rightFront;
+    private DcMotor leftBack;
+    private DcMotor rightBack;
+
+    private DcMotor intake;
+    private DcMotor carousel;
+    private DcMotor flywheel;
+
+    private Servo wobble;
+
+    @Override
+    public void runOpMode() throws InterruptedException {
+        leftFront = hardwareMap.get(DcMotor.class, "leftFront");
+        rightFront = hardwareMap.get(DcMotor.class, "rightFront");
+        leftBack = hardwareMap.get(DcMotor.class, "leftBack");
+        rightBack = hardwareMap.get(DcMotor.class, "rightBack");
+
+        intake = hardwareMap.get(DcMotor.class, "intake");
+        carousel = hardwareMap.get(DcMotor.class, "carousel");
+        flywheel = hardwareMap.get(DcMotor.class, "flywheel");
+
+        wobble = hardwareMap.servo.get("wobble");
+
+        AM chad = new AM(leftFront, rightFront, leftBack, rightBack);
+
+        wobble.setPosition(1);
+
+        waitForStart();
+
+        //drive to x
+        chad.driveFB(+meters, .8);
+
+        // shoot
+
+        // strafe and shoot at power-shots
+        for (int i = 0; i < 2; i++) {
+            chad.driveLR(-meters, .25);
+            //shoot
+        }
+        
+        // rotate and drive to correct zone
+        chad.rotate(+ABC, .5);
+        chad.driveFB(+ABC, .8);
+        
+        // drop the wobble, move away and rest the arm
+        wobble.setPosition(0);
+        chad.driveLR(+meters, .35);
+        wobble.setPosition(1);
+        
+        // if zone == B it is easier to get to single ring
+        if (zone == B) {
+            // rotate to face the rings
+            chad.rotate(-degrees, .35);
+            
+            // grab ring and park on line
+            chad.driveFB(+meters, .6);
+            chad.driveFB(-meters, .8);
+        }
+        
+        // drive backwards to park on launch line
+        else {
+            chad.driveFB(-meters, .8);
+        }
+    }
+}
